@@ -13,19 +13,25 @@
 <body>
   <a class="skip" href="#main">Saltar al contenido</a>
   <header class="top">
-    <h1>Tiendita</h1>
-    <nav class="tabs" role="tablist" aria-label="Secciones">
-      <button role="tab" data-tab="recibir" aria-selected="true"><span aria-hidden="true">📥</span> Recibir</button>
-      <button role="tab" data-tab="vender" aria-selected="false"><span aria-hidden="true">🛒</span> Vender</button>
-      <button role="tab" data-tab="registro" aria-selected="false"><span aria-hidden="true">📦</span> Registro</button>
-    </nav>
-    <div class="tools" role="group" aria-label="Ajustes de lectura">
+    <div class="bar">
+      <h1>Tiendita</h1>
+      <div class="actions">
+        <button class="chip" id="toolsBtn" aria-expanded="false" aria-controls="tools"><span aria-hidden="true">⚙️</span> Ajustes</button>
+        <button class="chip help" id="helpBtn">? Ayuda</button>
+      </div>
+    </div>
+    <div class="tools" id="tools" role="group" aria-label="Ajustes de lectura">
       <button class="chip" id="sizeDown" aria-label="Letra más pequeña">A−</button>
       <button class="chip" id="sizeUp" aria-label="Letra más grande">A+</button>
       <button class="chip" id="contrast" aria-pressed="false">Contraste</button>
-      <button class="chip help" id="helpBtn">? Ayuda</button>
     </div>
   </header>
+
+  <nav class="tabs" role="tablist" aria-label="Secciones">
+    <button role="tab" data-tab="recibir" aria-selected="true"><span aria-hidden="true">📥</span>Recibir</button>
+    <button role="tab" data-tab="vender" aria-selected="false"><span aria-hidden="true">🛒</span>Vender</button>
+    <button role="tab" data-tab="registro" aria-selected="false"><span aria-hidden="true">📦</span>Registro</button>
+  </nav>
 
   <main id="main">
     <!-- RECIBIR -->
@@ -92,27 +98,25 @@
 
       <div id="sub-stock">
         <div class="filters">
-          <label class="sr" for="stockQ">Buscar producto o código</label>
-          <input id="stockQ" type="search" placeholder="Buscar producto o código">
-          <label class="sr" for="stockF">Mostrar</label>
-          <select id="stockF"><option value="all">Todos</option><option value="low">Por surtir (5 o menos)</option><option value="out">Agotados</option></select>
-          <label class="sr" for="stockS">Ordenar por</label>
-          <select id="stockS"><option value="name">Nombre (A–Z)</option><option value="stock">Menos existencias</option><option value="price">Precio</option></select>
+          <div class="f wide"><label for="stockQ">Buscar</label><input id="stockQ" type="search" placeholder="Nombre o código"></div>
+          <div class="f"><label for="stockF">Mostrar</label>
+            <select id="stockF"><option value="all">Todos</option><option value="low">Por surtir</option><option value="out">Agotados</option></select></div>
+          <div class="f"><label for="stockS">Ordenar</label>
+            <select id="stockS"><option value="name">Nombre A–Z</option><option value="stock">Menos existencias</option><option value="price">Precio</option></select></div>
         </div>
-        <p class="hint" id="stockCount" aria-live="polite"></p>
-        <ul id="stockList" class="list"></ul>
+        <p class="count" id="stockCount" aria-live="polite"></p>
+        <ul id="stockList" class="list cards"></ul>
         <div class="pager" id="pg-stock"><button class="btn ghost">Anterior</button><span></span><button class="btn ghost">Siguiente</button></div>
       </div>
 
       <div id="sub-log" hidden>
         <div class="filters">
-          <label class="sr" for="logQ">Buscar en movimientos</label>
-          <input id="logQ" type="search" placeholder="Buscar proveedor o producto">
-          <label class="sr" for="logF">Mostrar</label>
-          <select id="logF"><option value="all">Entradas y ventas</option><option value="entrada">Solo entradas</option><option value="venta">Solo ventas</option></select>
+          <div class="f wide"><label for="logQ">Buscar</label><input id="logQ" type="search" placeholder="Proveedor o producto"></div>
+          <div class="f wide"><label for="logF">Mostrar</label>
+            <select id="logF"><option value="all">Entradas y ventas</option><option value="entrada">Solo entradas</option><option value="venta">Solo ventas</option></select></div>
         </div>
-        <p class="hint" id="logCount" aria-live="polite"></p>
-        <ul id="logList" class="list"></ul>
+        <p class="count" id="logCount" aria-live="polite"></p>
+        <ul id="logList" class="list cards"></ul>
         <div class="pager" id="pg-log"><button class="btn ghost">Anterior</button><span></span><button class="btn ghost">Siguiente</button></div>
       </div>
     </section>
@@ -122,12 +126,12 @@
   <button class="fab" id="asstBtn" aria-expanded="false" aria-controls="asst"><span aria-hidden="true">🎙️</span> Asistente</button>
   <aside class="asst" id="asst" role="dialog" aria-label="Asistente de voz" hidden>
     <div class="asst-head"><strong>Asistente</strong>
-      <label class="switch"><input type="checkbox" id="ttsOn" checked> Responder con voz</label>
-      <button class="chip" id="asstClose" aria-label="Cerrar asistente">✕</button></div>
+      <button class="chip" id="asstClose" aria-label="Cerrar asistente">✕ Cerrar</button></div>
+    <label class="switch"><input type="checkbox" id="ttsOn" checked> Responder con voz</label>
     <div id="asstLog" class="log" aria-live="polite"></div>
     <div class="sugg" id="sugg"></div>
-    <div class="row">
-      <button class="btn mic" id="mic" aria-label="Hablar">🎤 Hablar</button>
+    <button class="btn mic" id="mic" aria-label="Hablar">🎤 Hablar</button>
+    <div class="typed">
       <label class="sr" for="asstText">Escribe tu pedido</label>
       <input id="asstText" type="text" placeholder="O escribe aquí…">
       <button class="btn primary" id="asstSend">Enviar</button>

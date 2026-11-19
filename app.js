@@ -221,7 +221,7 @@ async function renderRegistro() {
     const pg = l.slice((view.stock.p - 1) * PAGE, view.stock.p * PAGE);
     $("#stockList").innerHTML = pg.map(p => { const [c, t] = estado(p.stock);
       return `<li><div>${esc(p.nombre)}<small>${esc(p.codigo)} · ${money(p.precio)}</small></div>
-      <div><strong>${p.stock}</strong> pzas <span class="tag ${c}">${t}</span></div></li>`; }).join("");
+      <div class="meta"><span><strong>${p.stock}</strong> pzas</span><span class="tag ${c}">${t}</span></div></li>`; }).join("");
     pager("stock", l.length, view.stock, renderRegistro);
   } else {
     const q = norm($("#logQ").value), f = $("#logF").value;
@@ -256,6 +256,7 @@ function openHelp() {
   $("#helpDlg").showModal();
 }
 $("#helpBtn").onclick = openHelp;
+$("#toolsBtn").onclick = () => { const o = $("#tools").classList.toggle("open"); $("#toolsBtn").setAttribute("aria-expanded", o); };
 $("#helpClose").onclick = () => { speechSynthesis?.cancel(); $("#helpDlg").close(); };
 $("#helpSpeak").onclick = () => speak(HELP[current].join(" "));
 if (HELP_CONTACT) { const a = $("#helpContact"); a.href = HELP_CONTACT; a.target = "_blank"; a.rel = "noopener"; a.hidden = false; }
