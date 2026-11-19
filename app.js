@@ -245,7 +245,7 @@ const HELP = {
   recibir: ["Toca «Abrir cámara» y apunta al ticket del proveedor.", "Toca «Tomar foto». Revisa que las letras se vean claras.", "Si no sale bien, toca «Abrir cámara» otra vez. También puedes subir una imagen.", "Toca «Registrar entrada» para guardarla."],
   vender: ["Toca «Abrir cámara» y acerca el código de barras del producto. Suena y se agrega solo.", "Si no lee, escribe los números del código y toca «Agregar».", "Usa + y − para cambiar cantidades. El total aparece abajo.", "Toca «Pagar con NFC» y acerca la tarjeta o el teléfono del cliente."],
   registro: ["En «Productos disponibles» busca por nombre y mira qué se está acabando.", "Elige «Por surtir» para ver solo lo que hay que comprar.", "En «Movimientos» ves lo que entró y lo que se vendió."],
-  asistente: ["Toca «Asistente» y luego «Hablar», o escribe.", "Puedes decir: «quiero registrar un ticket», «vender refresco», «qué me falta», «cuánto vendí hoy».", "Te contesta con voz. Puedes apagar la voz en el mismo cuadro."],
+  asistente: ["Toca «Asistente». Te escucha de inmediato: solo di qué quieres hacer.", "Puedes decir: «quiero registrar un ticket», «vender refresco», «qué me falta», «cuánto vendí hoy».", "Si prefieres, toca una de las opciones grandes. La voz se puede apagar."],
 };
 const TITULOS = { recibir: "Recibir mercancía", vender: "Vender", registro: "Registro", asistente: "Usar el asistente" };
 function openHelp() {
@@ -265,11 +265,8 @@ if (HELP_CONTACT) { const a = $("#helpContact"); a.href = HELP_CONTACT; a.target
    Contrato con la IA: POST AI_URL  { texto, contexto:{ seccion, faltantes:[...] } }
    Respuesta: { accion:"ir"|"vender"|"responder", destino?, sub?, producto?, cantidad?, respuesta }
    Mientras AI_URL sea null se usan reglas locales (funcionan sin conexión). */
-const asst = $("#asst"), log = $("#asstLog");
-function say(text, who = "bot") {
-  const d = document.createElement("div"); d.className = "msg " + who; d.textContent = text; log.append(d); log.scrollTop = log.scrollHeight;
-  if (who === "bot" && $("#ttsOn").checked) speak(text);
-}
+const asst = $("#asst"), msg = $("#asstMsg");
+function show(text) { msg.textContent = text; if ($("#ttsOn").checked) speak(text); }
 const faltantes = () => catalogo.filter(p => p.stock <= 5).sort((a, b) => a.stock - b.stock);
 function buscar(txt) {
   const stop = new Set(["un", "una", "unos", "unas", "el", "la", "los", "las", "de", "del", "y", "para", "esta", "este", "cosa", "producto", "por", "favor", "quiero", "dos", "tres"]);
@@ -311,34 +308,42 @@ async function interpretar(texto) {
 }
 async function pedir(texto) {
   texto = texto.trim(); if (!texto) return;
-  say(texto, "me"); catalogo = await api.listarProductos();
-  const r = await interpretar(texto);
+  msg.textContent = "Un momento…"; catalogo = await api.listarProductos();
+  const r = await interpretar(texto), nav = ["ir", "vender", "ayuda"].includes(r.accion);
+  let fin = r.respuesta;
+  if (nav) toggleAsst(false, true);                     // sin historial: se cierra y ejecuta
   if (r.accion === "ir") goTab(r.destino, r.sub);
-  if (r.accion === "vender") { goTab("vender"); if (r.producto && !addByCode(r.producto, r.cantidad || 1)) r.respuesta = "No pude agregarlo. Revisa las existencias."; }
-  if (r.accion === "ayuda") openHelp();
-  say(r.respuesta);
+  else if (r.accion === "vender") { goTab("vender"); if (r.producto && !addByCode(r.producto, r.cantidad || 1)) fin = "No pude agregarlo. Revisa las existencias."; }
+  else if (r.accion === "ayuda") openHelp();
+  if (nav) { if (r.accion !== "ayuda") toast(fin); if ($("#ttsOn").checked) speak(fin); }
+  else show(fin);                                       // respuesta única, sin conversación
 }
-function toggleAsst(open) {
+function toggleAsst(open, keepVoice) {
   asst.hidden = !open; $("#asstBtn").setAttribute("aria-expanded", open);
-  if (open) { if (!log.children.length) say("Hola, soy tu asistente. Dime qué quieres hacer."); $("#asstText").focus(); } else speechSynthesis?.cancel();
+  if (open) {
+    msg.textContent = voice.ok ? "Te escucho. Di qué quieres hacer, o toca una opción." : "Toca una opción o escribe lo que necesitas.";
+    voice.start();
+  } else { voice.stop(); if (!keepVoice) speechSynthesis?.cancel(); }
 }
+const voice = (() => {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition, mic = $("#mic");
+  if (!SR) { mic.hidden = true; $("#typedBox").hidden = false; return { ok: false, start() {}, stop() {} }; }
+  const rec = new SR(); rec.lang = "es-MX"; rec.interimResults = false; let on = false;
+  const off = () => { on = false; mic.classList.remove("on"); mic.textContent = "🎤 Hablar"; };
+  rec.onresult = e => pedir(e.results[0][0].transcript);
+  rec.onend = off;
+  rec.onerror = () => { off(); msg.textContent = "No te escuché. Toca el micrófono para intentar otra vez."; };
+  const start = () => { if (on) return; speechSynthesis?.cancel(); try { rec.start(); on = true; mic.classList.add("on"); mic.textContent = "Escuchando… (toca para parar)"; } catch {} };
+  mic.onclick = () => on ? rec.stop() : start();
+  return { ok: true, start, stop() { try { rec.stop(); } catch {} } };
+})();
 $("#asstBtn").onclick = () => toggleAsst(asst.hidden);
 $("#asstClose").onclick = () => { toggleAsst(false); $("#asstBtn").focus(); };
 asst.addEventListener("keydown", e => { if (e.key === "Escape") $("#asstClose").click(); });
 $("#asstSend").onclick = () => { pedir($("#asstText").value); $("#asstText").value = ""; };
 $("#asstText").onkeydown = e => { if (e.key === "Enter") $("#asstSend").click(); };
-["Quiero registrar un ticket", "Quiero vender", "¿Qué me falta?", "¿Cuánto vendí hoy?"].forEach(s => {
-  const b = document.createElement("button"); b.className = "chip"; b.textContent = s; b.onclick = () => pedir(s); $("#sugg").append(b);
-});
-(() => {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition, mic = $("#mic");
-  if (!SR) { mic.disabled = true; mic.title = "Tu navegador no reconoce voz. Escribe tu pedido."; return; }
-  const rec = new SR(); rec.lang = "es-MX"; rec.interimResults = false;
-  rec.onresult = e => pedir(e.results[0][0].transcript);
-  rec.onend = () => { mic.classList.remove("on"); mic.textContent = "🎤 Hablar"; };
-  rec.onerror = () => toast("No te escuché. Intenta otra vez o escribe.");
-  mic.onclick = () => { speechSynthesis?.cancel(); mic.classList.add("on"); mic.textContent = "Escuchando…"; try { rec.start(); } catch {} };
-})();
+[["📥 Registrar un ticket", "Quiero registrar un ticket"], ["🛒 Vender", "Quiero vender"], ["📋 ¿Qué me falta?", "¿Qué me falta?"], ["💰 ¿Cuánto vendí hoy?", "¿Cuánto vendí hoy?"]]
+  .forEach(([t, f]) => { const b = document.createElement("button"); b.className = "btn"; b.textContent = t; b.onclick = () => pedir(f); $("#opts").append(b); });
 
 /* ============================ Inicio ============================ */
 (async () => {

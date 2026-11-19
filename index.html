@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=3">
+  <link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body>
   <a class="skip" href="#main">Saltar al contenido</a>
@@ -124,18 +124,18 @@
 
   <!-- Asistente -->
   <button class="fab" id="asstBtn" aria-expanded="false" aria-controls="asst"><span aria-hidden="true">🎙️</span> Asistente</button>
-  <aside class="asst" id="asst" role="dialog" aria-label="Asistente de voz" hidden>
+  <aside class="asst" id="asst" role="dialog" aria-label="Asistente" hidden>
     <div class="asst-head"><strong>Asistente</strong>
       <button class="chip" id="asstClose" aria-label="Cerrar asistente">✕ Cerrar</button></div>
-    <label class="switch"><input type="checkbox" id="ttsOn" checked> Responder con voz</label>
-    <div id="asstLog" class="log" aria-live="polite"></div>
-    <div class="sugg" id="sugg"></div>
+    <p class="asst-msg" id="asstMsg" aria-live="polite"></p>
     <button class="btn mic" id="mic" aria-label="Hablar">🎤 Hablar</button>
-    <div class="typed">
-      <label class="sr" for="asstText">Escribe tu pedido</label>
-      <input id="asstText" type="text" placeholder="O escribe aquí…">
+    <div class="opts" id="opts"></div>
+    <div class="typed" id="typedBox" hidden>
+      <label class="sr" for="asstText">Escribe qué necesitas</label>
+      <input id="asstText" type="text" placeholder="Escribe aquí…">
       <button class="btn primary" id="asstSend">Enviar</button>
     </div>
+    <label class="switch"><input type="checkbox" id="ttsOn" checked> Responder con voz</label>
   </aside>
 
   <!-- Ayuda -->
@@ -150,6 +150,6 @@
   </dialog>
 
   <div id="toast" role="status"></div>
-  <script src="app.js?v=3"></script>
+  <script src="app.js?v=4"></script>
 </body>
 </html>
