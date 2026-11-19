@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-size="1">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -11,83 +11,63 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <a class="skip" href="#main">Saltar al contenido</a>
   <header class="top">
     <h1>Tiendita</h1>
     <nav class="tabs" role="tablist" aria-label="Secciones">
-      <button role="tab" data-tab="recibir" aria-selected="true">Recibir</button>
-      <button role="tab" data-tab="vender" aria-selected="false">Vender</button>
-      <button role="tab" data-tab="registro" aria-selected="false">Registro</button>
+      <button role="tab" data-tab="recibir" aria-selected="true"><span aria-hidden="true">📥</span> Recibir</button>
+      <button role="tab" data-tab="vender" aria-selected="false"><span aria-hidden="true">🛒</span> Vender</button>
+      <button role="tab" data-tab="registro" aria-selected="false"><span aria-hidden="true">📦</span> Registro</button>
     </nav>
+    <div class="tools" role="group" aria-label="Ajustes de lectura">
+      <button class="chip" id="sizeDown" aria-label="Letra más pequeña">A−</button>
+      <button class="chip" id="sizeUp" aria-label="Letra más grande">A+</button>
+      <button class="chip" id="contrast" aria-pressed="false">Contraste</button>
+      <button class="chip help" id="helpBtn">? Ayuda</button>
+    </div>
   </header>
 
-  <main>
+  <main id="main">
     <!-- RECIBIR -->
-    <section id="tab-recibir" class="panel" role="tabpanel">
-      <h2>Registrar mercancía recibida</h2>
-      <p class="hint">Envía el ticket como foto, audio o texto. Se guarda como pendiente hasta conectar la base de datos.</p>
-
-      <div class="seg" role="group" aria-label="Tipo de captura">
-        <button data-mode="foto" aria-pressed="true">Foto</button>
-        <button data-mode="audio" aria-pressed="false">Audio</button>
-        <button data-mode="texto" aria-pressed="false">Texto</button>
+    <section id="tab-recibir" class="panel" role="tabpanel" aria-labelledby="h-recibir">
+      <h2 id="h-recibir">Registrar mercancía recibida</h2>
+      <p class="hint">Toma una foto del ticket o la nota del proveedor. Queda guardada como pendiente hasta conectar la base de datos.</p>
+      <div class="viewport">
+        <video id="photoVideo" playsinline muted hidden></video>
+        <img id="photoPreview" alt="Vista previa del ticket" hidden>
+        <p class="empty" id="photoEmpty">Abre la cámara o sube una imagen del ticket.</p>
       </div>
-
-      <div class="mode" id="mode-foto">
-        <div class="viewport" id="photoView">
-          <video id="photoVideo" playsinline muted hidden></video>
-          <img id="photoPreview" alt="Vista previa del ticket" hidden>
-          <p class="empty" id="photoEmpty">Abre la cámara o sube una imagen del ticket.</p>
-        </div>
-        <div class="row">
-          <button class="btn" id="photoOpen">Abrir cámara</button>
-          <button class="btn" id="photoSnap" hidden>Tomar foto</button>
-          <label class="btn ghost">Subir imagen
-            <input type="file" id="photoFile" accept="image/*" hidden>
-          </label>
-        </div>
-      </div>
-
-      <div class="mode" id="mode-audio" hidden>
-        <div class="viewport audio">
-          <p class="timer" id="audioTimer">00:00</p>
-          <audio id="audioPreview" controls hidden></audio>
-        </div>
-        <div class="row">
-          <button class="btn" id="audioRec">Grabar</button>
-          <p class="hint inline">Ej.: "Llegaron 12 refrescos de 600 ml y 5 bolsas de arroz".</p>
-        </div>
-      </div>
-
-      <div class="mode" id="mode-texto" hidden>
-        <label for="textoEntrada" class="sr">Descripción de lo recibido</label>
-        <textarea id="textoEntrada" rows="6" placeholder="Proveedor, productos y cantidades recibidas"></textarea>
-      </div>
-
       <div class="row">
+        <button class="btn" id="photoOpen">Abrir cámara</button>
+        <button class="btn" id="photoSnap" hidden>Tomar foto</button>
+        <label class="btn ghost" tabindex="0" id="fileLabel">Subir imagen
+          <input type="file" id="photoFile" accept="image/*" hidden>
+        </label>
+      </div>
+      <div class="row">
+        <label class="sr" for="proveedor">Proveedor (opcional)</label>
         <input id="proveedor" type="text" placeholder="Proveedor (opcional)">
         <button class="btn primary" id="guardarEntrada">Registrar entrada</button>
       </div>
     </section>
 
     <!-- VENDER -->
-    <section id="tab-vender" class="panel" role="tabpanel" hidden>
+    <section id="tab-vender" class="panel" role="tabpanel" aria-labelledby="h-vender" hidden>
       <div class="pos">
         <div class="scanner">
-          <h2>Escanear productos</h2>
+          <h2 id="h-vender">Escanear productos</h2>
           <div class="viewport">
             <video id="scanVideo" playsinline muted hidden></video>
             <div class="reticle" id="reticle" hidden></div>
             <p class="empty" id="scanEmpty">La cámara leerá el código de barras.</p>
           </div>
+          <div class="row"><button class="btn" id="scanToggle">Abrir cámara</button></div>
           <div class="row">
-            <button class="btn" id="scanToggle">Abrir cámara</button>
-          </div>
-          <div class="row">
+            <label class="sr" for="codigoManual">Código de barras</label>
             <input id="codigoManual" type="text" inputmode="numeric" placeholder="Código manual o lector USB">
             <button class="btn ghost" id="codigoAdd">Agregar</button>
           </div>
         </div>
-
         <aside class="cart" aria-live="polite">
           <h2>Carrito</h2>
           <ul id="cartList" class="list"></ul>
@@ -103,20 +83,67 @@
     </section>
 
     <!-- REGISTRO -->
-    <section id="tab-registro" class="panel" role="tabpanel" hidden>
-      <div class="cols">
-        <div>
-          <h2>Productos disponibles</h2>
-          <ul id="stockList" class="list"></ul>
+    <section id="tab-registro" class="panel" role="tabpanel" aria-labelledby="h-registro" hidden>
+      <h2 id="h-registro">Registro</h2>
+      <div class="seg" role="group" aria-label="Subsección">
+        <button data-sub="stock" aria-pressed="true">Productos disponibles</button>
+        <button data-sub="log" aria-pressed="false">Movimientos</button>
+      </div>
+
+      <div id="sub-stock">
+        <div class="filters">
+          <label class="sr" for="stockQ">Buscar producto o código</label>
+          <input id="stockQ" type="search" placeholder="Buscar producto o código">
+          <label class="sr" for="stockF">Mostrar</label>
+          <select id="stockF"><option value="all">Todos</option><option value="low">Por surtir (5 o menos)</option><option value="out">Agotados</option></select>
+          <label class="sr" for="stockS">Ordenar por</label>
+          <select id="stockS"><option value="name">Nombre (A–Z)</option><option value="stock">Menos existencias</option><option value="price">Precio</option></select>
         </div>
-        <div>
-          <h2>Movimientos</h2>
-          <ul id="logList" class="list"></ul>
-          <p class="empty" id="logEmpty">Aún no hay entradas ni ventas.</p>
+        <p class="hint" id="stockCount" aria-live="polite"></p>
+        <ul id="stockList" class="list"></ul>
+        <div class="pager" id="pg-stock"><button class="btn ghost">Anterior</button><span></span><button class="btn ghost">Siguiente</button></div>
+      </div>
+
+      <div id="sub-log" hidden>
+        <div class="filters">
+          <label class="sr" for="logQ">Buscar en movimientos</label>
+          <input id="logQ" type="search" placeholder="Buscar proveedor o producto">
+          <label class="sr" for="logF">Mostrar</label>
+          <select id="logF"><option value="all">Entradas y ventas</option><option value="entrada">Solo entradas</option><option value="venta">Solo ventas</option></select>
         </div>
+        <p class="hint" id="logCount" aria-live="polite"></p>
+        <ul id="logList" class="list"></ul>
+        <div class="pager" id="pg-log"><button class="btn ghost">Anterior</button><span></span><button class="btn ghost">Siguiente</button></div>
       </div>
     </section>
   </main>
+
+  <!-- Asistente -->
+  <button class="fab" id="asstBtn" aria-expanded="false" aria-controls="asst"><span aria-hidden="true">🎙️</span> Asistente</button>
+  <aside class="asst" id="asst" role="dialog" aria-label="Asistente de voz" hidden>
+    <div class="asst-head"><strong>Asistente</strong>
+      <label class="switch"><input type="checkbox" id="ttsOn" checked> Responder con voz</label>
+      <button class="chip" id="asstClose" aria-label="Cerrar asistente">✕</button></div>
+    <div id="asstLog" class="log" aria-live="polite"></div>
+    <div class="sugg" id="sugg"></div>
+    <div class="row">
+      <button class="btn mic" id="mic" aria-label="Hablar">🎤 Hablar</button>
+      <label class="sr" for="asstText">Escribe tu pedido</label>
+      <input id="asstText" type="text" placeholder="O escribe aquí…">
+      <button class="btn primary" id="asstSend">Enviar</button>
+    </div>
+  </aside>
+
+  <!-- Ayuda -->
+  <dialog id="helpDlg" aria-labelledby="helpTitle">
+    <h2 id="helpTitle">Ayuda</h2>
+    <div id="helpBody"></div>
+    <div class="row">
+      <button class="btn" id="helpSpeak">🔊 Escuchar</button>
+      <a class="btn ghost" id="helpContact" hidden>Pedir ayuda a una persona</a>
+      <button class="btn primary" id="helpClose">Entendido</button>
+    </div>
+  </dialog>
 
   <div id="toast" role="status"></div>
   <script src="app.js"></script>
