@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=4">
+  <link rel="stylesheet" href="styles.css?v=5">
 </head>
 <body>
   <a class="skip" href="#main">Saltar al contenido</a>
@@ -37,23 +37,40 @@
     <!-- RECIBIR -->
     <section id="tab-recibir" class="panel" role="tabpanel" aria-labelledby="h-recibir">
       <h2 id="h-recibir">Registrar mercancía recibida</h2>
-      <p class="hint">Toma una foto del ticket o la nota del proveedor. Queda guardada como pendiente hasta conectar la base de datos.</p>
-      <div class="viewport">
-        <video id="photoVideo" playsinline muted hidden></video>
-        <img id="photoPreview" alt="Vista previa del ticket" hidden>
-        <p class="empty" id="photoEmpty">Abre la cámara o sube una imagen del ticket.</p>
+      <div id="captureBox">
+        <p class="hint">Toma una foto del ticket del proveedor. La app lee los productos y tú los revisas antes de guardar.</p>
+        <div class="viewport">
+          <video id="photoVideo" playsinline muted hidden></video>
+          <img id="photoPreview" alt="Vista previa del ticket" hidden>
+          <p class="empty" id="photoEmpty">Abre la cámara o sube una imagen del ticket.</p>
+        </div>
+        <div class="row">
+          <button class="btn" id="photoOpen">Abrir cámara</button>
+          <button class="btn" id="photoSnap" hidden>Tomar foto</button>
+          <label class="btn ghost" tabindex="0" id="fileLabel">Subir imagen
+            <input type="file" id="photoFile" accept="image/*" hidden>
+          </label>
+        </div>
+        <div class="row">
+          <label class="sr" for="proveedor">Proveedor (opcional)</label>
+          <input id="proveedor" type="text" placeholder="Proveedor (opcional)">
+          <button class="btn primary" id="guardarEntrada">Leer ticket</button>
+        </div>
       </div>
-      <div class="row">
-        <button class="btn" id="photoOpen">Abrir cámara</button>
-        <button class="btn" id="photoSnap" hidden>Tomar foto</button>
-        <label class="btn ghost" tabindex="0" id="fileLabel">Subir imagen
-          <input type="file" id="photoFile" accept="image/*" hidden>
-        </label>
+
+      <div id="reviewBox" hidden>
+        <p class="hint" id="reviewHint" aria-live="polite"></p>
+        <ul id="reviewList" class="list cards"></ul>
+        <div class="row"><button class="btn ghost" id="reviewAdd">+ Agregar producto</button></div>
+        <div class="row">
+          <button class="btn ghost" id="reviewCancel">Volver a empezar</button>
+          <button class="btn primary" id="reviewOk">Confirmar y guardar</button>
+        </div>
       </div>
-      <div class="row">
-        <label class="sr" for="proveedor">Proveedor (opcional)</label>
-        <input id="proveedor" type="text" placeholder="Proveedor (opcional)">
-        <button class="btn primary" id="guardarEntrada">Registrar entrada</button>
+
+      <div class="undo" id="undoBox" hidden role="status">
+        <p id="undoMsg"></p>
+        <button class="btn ghost" id="undoBtn">Deshacer esta entrada</button>
       </div>
     </section>
 
@@ -73,6 +90,11 @@
             <input id="codigoManual" type="text" inputmode="numeric" placeholder="Código manual o lector USB">
             <button class="btn ghost" id="codigoAdd">Agregar</button>
           </div>
+          <div class="row">
+            <label class="sr" for="nombreBuscar">Buscar producto por nombre</label>
+            <input id="nombreBuscar" type="search" placeholder="O busca por nombre">
+          </div>
+          <div class="names" id="nombreRes"></div>
         </div>
         <aside class="cart" aria-live="polite">
           <h2>Carrito</h2>
@@ -150,6 +172,6 @@
   </dialog>
 
   <div id="toast" role="status"></div>
-  <script src="app.js?v=4"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>

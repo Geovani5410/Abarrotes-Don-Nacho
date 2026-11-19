@@ -66,7 +66,7 @@ main{max-width:1080px;margin:0 auto;padding:.75rem}
 .btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
 .btn.primary{background:var(--signal);color:#1b2430}
 .btn:disabled{opacity:.5;cursor:not-allowed}
-input[type=text],input[type=search],select{width:100%;min-width:0;min-height:52px;padding:.6rem .85rem;border:2px solid var(--line);border-radius:12px;background:var(--surface)}
+input[type=text],input[type=search],input[type=number],select{width:100%;min-width:0;min-height:52px;padding:.6rem .85rem;border:2px solid var(--line);border-radius:12px;background:var(--surface)}
 .row>input{flex:1 1 180px;width:auto}
 
 .pos{display:grid;gap:1.25rem}
@@ -112,6 +112,15 @@ input[type=text],input[type=search],select{width:100%;min-width:0;min-height:52p
 .typed{display:flex;gap:.5rem;flex-shrink:0}
 .typed .btn{flex-shrink:0}
 
+.cards li.rev-li{flex-direction:column;align-items:stretch}
+.cards li.warn{border-color:var(--danger);border-width:3px}
+.rev{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.rev .n{grid-column:1/-1}
+.rev label{display:block;font-size:.85rem;font-weight:600;margin-bottom:.15rem}
+.names{display:grid;gap:.4rem;margin-top:.5rem}
+.names .btn{justify-content:space-between;text-align:left;gap:.5rem}
+.undo{margin-top:1rem;padding:1rem;border:2px solid var(--ok);border-radius:12px}
+.undo p{margin:0 0 .6rem;font-weight:600}
 dialog{width:min(560px,calc(100% - 1.5rem));max-height:88vh;overflow:auto;border:2px solid var(--ink);border-radius:var(--r);background:var(--surface);color:var(--ink);padding:1.1rem}
 dialog::backdrop{background:rgba(0,0,0,.55)}
 dialog ol{padding-left:1.3rem;font-size:1.1rem}dialog li{margin:.4rem 0}
