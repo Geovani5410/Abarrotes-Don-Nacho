@@ -320,19 +320,41 @@ $("#nombreBuscar").addEventListener("input", () => {
   };
 });
 
+const hayAndroid = typeof Android !== "undefined" && typeof Android.startPayment === "function";
+const centavos = n => Math.round(n * 100);
+let ventaPendiente = null;
+
+// La app Android llama a esta función cuando termina el cobro
+window.onPaymentResult = async r => {
+  const st = $("#nfcStatus");
+  const v = ventaPendiente; ventaPendiente = null;
+  $("#payNfc").disabled = !carrito.length;
+  if (!v) return;
+  if (r.status === "succeeded") {
+    await api.crearVenta({ items: v.items, total: v.total, metodo: "tarjeta", referencia: r.paymentIntentId });
+    carrito = []; renderCarrito(); await refresh();
+    st.textContent = ""; toast("Venta registrada: " + money(v.total));
+  } else {
+    st.textContent = r.message || "El pago no se completó.";
+  }
+};
+
 $("#payNfc").onclick = async () => {
   const st = $("#nfcStatus"), total = carrito.reduce((s, i) => s + i.precio * i.cantidad, 0);
-  const cerrar = async ref => {
-    await api.crearVenta({ items: carrito, total, metodo: "nfc", referencia: ref }); // TODO: cobro real y POST /sales
-    carrito = []; renderCarrito(); await refresh(); st.textContent = ""; toast("Venta registrada: " + money(total));
-  };
-  if (!("NDEFReader" in window)) {
-    st.textContent = "NFC no disponible en este dispositivo.";
-    if (confirm("NFC no está disponible aquí. ¿Simular el pago para probar?")) await cerrar("simulado");
+  if (total <= 0) { st.textContent = "El total debe ser mayor a $0.00."; return; }
+
+  if (!hayAndroid) {   // navegador normal: modo demostración, como antes
+    if (confirm("Aquí no hay terminal de pago. ¿Simular el cobro para probar?")) {
+      await api.crearVenta({ items: carrito, total, metodo: "tarjeta", referencia: "simulado" });
+      carrito = []; renderCarrito(); await refresh(); toast("Venta registrada: " + money(total));
+    }
     return;
   }
-  try { const r = new NDEFReader(); await r.scan(); st.textContent = "Acerca la tarjeta o el teléfono del cliente…"; r.onreading = e => cerrar(e.serialNumber || "nfc"); }
-  catch { st.textContent = "No se pudo iniciar NFC. Revisa los permisos."; }
+
+  ventaPendiente = { items: carrito.map(i => ({ ...i })), total };
+  $("#payNfc").disabled = true;
+  st.textContent = "Cobrando " + money(total) + "…";
+  Android.startPayment(centavos(total));
 };
 
 /* ============================ REGISTRO ============================
