@@ -172,6 +172,30 @@
   </dialog>
 
   <div id="toast" role="status"></div>
-  <script src="app.js?v=5"></script>
+
+  <!-- Modal rápido para código de barras no registrado -->
+  <dialog id="newProdDlg" aria-labelledby="newProdTitle">
+    <h2 id="newProdTitle">Producto nuevo</h2>
+    <p class="hint">Código: <strong id="npCodigoText"></strong></p>
+    <form id="newProdForm">
+      <input type="hidden" id="npCodigo">
+      <div class="row">
+        <input id="npNombre" type="text" placeholder="Nombre (ej. Galletas Marías 170g)" required>
+      </div>
+      <div class="row">
+        <input id="npPrecio" type="number" step="0.50" min="0.50" placeholder="Precio venta ($)" required>
+        <input id="npStock" type="number" step="1" min="0" value="10" placeholder="Existencia inicial">
+      </div>
+      <div class="row">
+        <button type="button" class="btn ghost" id="npCancel">Cancelar</button>
+        <button type="submit" class="btn primary" id="npSave">Guardar y agregar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="app.js?v=6"></script>
+
+
 </body>
 </html>

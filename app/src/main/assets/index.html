@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es" data-size="1">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1b2430">
+  <title>Tiendita · Entradas y ventas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=5">
+</head>
+<body>
+  <a class="skip" href="#main">Saltar al contenido</a>
+  <header class="top">
+    <div class="bar">
+      <h1>Tiendita</h1>
+      <div class="actions">
+        <button class="chip" id="toolsBtn" aria-expanded="false" aria-controls="tools"><span aria-hidden="true">⚙️</span> Ajustes</button>
+        <button class="chip help" id="helpBtn">? Ayuda</button>
+      </div>
+    </div>
+    <div class="tools" id="tools" role="group" aria-label="Ajustes de lectura">
+      <button class="chip" id="sizeDown" aria-label="Letra más pequeña">A−</button>
+      <button class="chip" id="sizeUp" aria-label="Letra más grande">A+</button>
+      <button class="chip" id="contrast" aria-pressed="false">Contraste</button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Secciones">
+    <button role="tab" data-tab="recibir" aria-selected="true"><span aria-hidden="true">📥</span>Recibir</button>
+    <button role="tab" data-tab="vender" aria-selected="false"><span aria-hidden="true">🛒</span>Vender</button>
+    <button role="tab" data-tab="registro" aria-selected="false"><span aria-hidden="true">📦</span>Registro</button>
+  </nav>
+
+  <main id="main">
+    <!-- RECIBIR -->
+    <section id="tab-recibir" class="panel" role="tabpanel" aria-labelledby="h-recibir">
+      <h2 id="h-recibir">Registrar mercancía recibida</h2>
+      <div id="captureBox">
+        <p class="hint">Toma una foto del ticket del proveedor. La app lee los productos y tú los revisas antes de guardar.</p>
+        <div class="viewport">
+          <video id="photoVideo" playsinline muted hidden></video>
+          <img id="photoPreview" alt="Vista previa del ticket" hidden>
+          <p class="empty" id="photoEmpty">Abre la cámara o sube una imagen del ticket.</p>
+        </div>
+        <div class="row">
+          <button class="btn" id="photoOpen">Abrir cámara</button>
+          <button class="btn" id="photoSnap" hidden>Tomar foto</button>
+          <label class="btn ghost" tabindex="0" id="fileLabel">Subir imagen
+            <input type="file" id="photoFile" accept="image/*" hidden>
+          </label>
+        </div>
+        <div class="row">
+          <label class="sr" for="proveedor">Proveedor (opcional)</label>
+          <input id="proveedor" type="text" placeholder="Proveedor (opcional)">
+          <button class="btn primary" id="guardarEntrada" aria-disabled="true">Leer ticket</button>
+        </div>
+      </div>
+
+      <div id="reviewBox" hidden>
+        <p class="hint" id="reviewHint" aria-live="polite"></p>
+        <ul id="reviewList" class="list cards"></ul>
+        <div class="row"><button class="btn ghost" id="reviewAdd">+ Agregar producto</button></div>
+        <div class="row">
+          <button class="btn ghost" id="reviewCancel">Volver a empezar</button>
+          <button class="btn primary" id="reviewOk">Confirmar y guardar</button>
+        </div>
+      </div>
+
+      <div class="undo" id="undoBox" hidden role="status">
+        <p id="undoMsg"></p>
+        <button class="btn ghost" id="undoBtn">Deshacer esta entrada</button>
+      </div>
+    </section>
+
+    <!-- VENDER -->
+    <section id="tab-vender" class="panel" role="tabpanel" aria-labelledby="h-vender" hidden>
+      <div class="pos">
+        <div class="scanner">
+          <h2 id="h-vender">Escanear productos</h2>
+          <div class="viewport">
+            <video id="scanVideo" playsinline muted hidden></video>
+            <div class="reticle" id="reticle" hidden></div>
+            <p class="empty" id="scanEmpty">La cámara leerá el código de barras.</p>
+          </div>
+          <div class="row"><button class="btn" id="scanToggle">Abrir cámara</button></div>
+          <div class="row">
+            <label class="sr" for="codigoManual">Código de barras</label>
+            <input id="codigoManual" type="text" inputmode="numeric" placeholder="Código manual o lector USB">
+            <button class="btn ghost" id="codigoAdd">Agregar</button>
+          </div>
+          <div class="row">
+            <label class="sr" for="nombreBuscar">Buscar producto por nombre</label>
+            <input id="nombreBuscar" type="search" placeholder="O busca por nombre">
+          </div>
+          <div class="names" id="nombreRes"></div>
+        </div>
+        <aside class="cart" aria-live="polite">
+          <h2>Carrito</h2>
+          <ul id="cartList" class="list"></ul>
+          <p class="empty" id="cartEmpty">Escanea un producto para empezar.</p>
+          <div class="total"><span>Total</span><strong id="cartTotal">$0.00</strong></div>
+          <div class="row">
+            <button class="btn ghost" id="cartClear">Vaciar</button>
+            <button class="btn primary" id="payNfc" disabled>Pagar con tarjeta</button>
+          </div>
+          <p class="hint" id="nfcStatus"></p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- REGISTRO -->
+    <section id="tab-registro" class="panel" role="tabpanel" aria-labelledby="h-registro" hidden>
+      <h2 id="h-registro">Registro</h2>
+      <div class="seg" role="group" aria-label="Subsección">
+        <button data-sub="stock" aria-pressed="true">Productos disponibles</button>
+        <button data-sub="log" aria-pressed="false">Movimientos</button>
+      </div>
+
+      <div id="sub-stock">
+        <div class="filters">
+          <div class="f wide"><label for="stockQ">Buscar</label><input id="stockQ" type="search" placeholder="Nombre o código"></div>
+          <div class="f"><label for="stockF">Mostrar</label>
+            <select id="stockF"><option value="all">Todos</option><option value="low">Por surtir</option><option value="out">Agotados</option></select></div>
+          <div class="f"><label for="stockS">Ordenar</label>
+            <select id="stockS"><option value="name">Nombre A–Z</option><option value="stock">Menos existencias</option><option value="price">Precio</option></select></div>
+        </div>
+        <p class="count" id="stockCount" aria-live="polite"></p>
+        <ul id="stockList" class="list cards"></ul>
+        <div class="pager" id="pg-stock"><button class="btn ghost">Anterior</button><span></span><button class="btn ghost">Siguiente</button></div>
+      </div>
+
+      <div id="sub-log" hidden>
+        <div class="filters">
+          <div class="f wide"><label for="logQ">Buscar</label><input id="logQ" type="search" placeholder="Proveedor o producto"></div>
+          <div class="f wide"><label for="logF">Mostrar</label>
+            <select id="logF"><option value="all">Entradas y ventas</option><option value="entrada">Solo entradas</option><option value="venta">Solo ventas</option></select></div>
+        </div>
+        <p class="count" id="logCount" aria-live="polite"></p>
+        <ul id="logList" class="list cards"></ul>
+        <div class="pager" id="pg-log"><button class="btn ghost">Anterior</button><span></span><button class="btn ghost">Siguiente</button></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Asistente -->
+  <button class="fab" id="asstBtn" aria-expanded="false" aria-controls="asst"><span aria-hidden="true">🎙️</span> Asistente</button>
+  <aside class="asst" id="asst" role="dialog" aria-label="Asistente" hidden>
+    <div class="asst-head"><strong>Asistente</strong>
+      <button class="chip" id="asstClose" aria-label="Cerrar asistente">✕ Cerrar</button></div>
+    <p class="asst-msg" id="asstMsg" aria-live="polite"></p>
+    <button class="btn mic" id="mic" aria-label="Hablar">🎤 Hablar</button>
+    <div class="opts" id="opts"></div>
+    <div class="typed" id="typedBox" hidden>
+      <label class="sr" for="asstText">Escribe qué necesitas</label>
+      <input id="asstText" type="text" placeholder="Escribe aquí…">
+      <button class="btn primary" id="asstSend">Enviar</button>
+    </div>
+    <label class="switch"><input type="checkbox" id="ttsOn" checked> Responder con voz</label>
+  </aside>
+
+  <!-- Ayuda -->
+  <dialog id="helpDlg" aria-labelledby="helpTitle">
+    <h2 id="helpTitle">Ayuda</h2>
+    <div id="helpBody"></div>
+    <div class="row">
+      <button class="btn" id="helpSpeak"> Escuchar</button>
+      <a class="btn ghost" id="helpContact" hidden>Pedir ayuda a una persona</a>
+      <button class="btn primary" id="helpClose">Entendido</button>
+    </div>
+  </dialog>
+
+  <div id="toast" role="status"></div>
+
+  <!-- Modal rápido para código de barras no registrado -->
+  <dialog id="newProdDlg" aria-labelledby="newProdTitle">
+    <h2 id="newProdTitle">Producto nuevo</h2>
+    <p class="hint">Código: <strong id="npCodigoText"></strong></p>
+    <form id="newProdForm">
+      <input type="hidden" id="npCodigo">
+      <div class="row">
+        <input id="npNombre" type="text" placeholder="Nombre (ej. Galletas Marías 170g)" required>
+      </div>
+      <div class="row">
+        <input id="npPrecio" type="number" step="0.50" min="0.50" placeholder="Precio venta ($)" required>
+        <input id="npStock" type="number" step="1" min="0" value="10" placeholder="Existencia inicial">
+      </div>
+      <div class="row">
+        <button type="button" class="btn ghost" id="npCancel">Cancelar</button>
+        <button type="submit" class="btn primary" id="npSave">Guardar y agregar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="app.js?v=6"></script>
+
+
+</body>
+</html>
