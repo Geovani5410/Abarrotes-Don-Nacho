@@ -54,7 +54,7 @@
         <div class="row">
           <label class="sr" for="proveedor">Proveedor (opcional)</label>
           <input id="proveedor" type="text" placeholder="Proveedor (opcional)">
-          <button class="btn primary" id="guardarEntrada">Leer ticket</button>
+          <button class="btn primary" id="guardarEntrada" aria-disabled="true">Leer ticket</button>
         </div>
       </div>
 
@@ -103,7 +103,7 @@
           <div class="total"><span>Total</span><strong id="cartTotal">$0.00</strong></div>
           <div class="row">
             <button class="btn ghost" id="cartClear">Vaciar</button>
-            <button class="btn primary" id="payNfc" disabled>Pagar con NFC</button>
+            <button class="btn primary" id="payNfc" disabled>Pagar con tarjeta</button>
           </div>
           <p class="hint" id="nfcStatus"></p>
         </aside>
@@ -165,7 +165,7 @@
     <h2 id="helpTitle">Ayuda</h2>
     <div id="helpBody"></div>
     <div class="row">
-      <button class="btn" id="helpSpeak">🔊 Escuchar</button>
+      <button class="btn" id="helpSpeak"> Escuchar</button>
       <a class="btn ghost" id="helpContact" hidden>Pedir ayuda a una persona</a>
       <button class="btn primary" id="helpClose">Entendido</button>
     </div>
