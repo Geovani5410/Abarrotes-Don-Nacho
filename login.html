@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Abarrotes Don Nacho — Acceso</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    // Si ya existe un token guardado, entrar directo a la app
+    if (localStorage.getItem("dn_token")) {
+      location.replace("index.html");
+    }
+  </script>
+</head>
+<body class="auth-body">
+  <main class="auth-container card">
+    <header class="auth-header">
+      <h1>Abarrotes Don Nacho</h1>
+      <p id="auth-subtitle">Inicia sesión para comenzar a vender</p>
+    </header>
+
+    <!-- Selector de modo -->
+    <div class="auth-tabs" role="tablist">
+      <button type="button" id="tab-login" class="tab-btn active" aria-selected="true">
+        Iniciar sesión
+      </button>
+      <button type="button" id="tab-register" class="tab-btn" aria-selected="false">
+        Crear cuenta
+      </button>
+    </div>
+
+    <!-- Mensaje de error o éxito -->
+    <div id="auth-alert" class="alert hidden" role="alert"></div>
+
+    <!-- Formulario: Iniciar sesión -->
+    <form id="form-login" class="auth-form">
+      <label for="login-correo">Correo electrónico</label>
+      <input type="email" id="login-correo" required autocomplete="email" placeholder="ejemplo@donnacho.mx" />
+
+      <label for="login-password">Contraseña</label>
+      <input type="password" id="login-password" required autocomplete="current-password" placeholder="••••••••" />
+
+      <button type="submit" id="btn-login" class="btn-primary">Entrar</button>
+    </form>
+
+    <!-- Formulario: Crear cuenta (solo para el 1er Administrador o prueba inicial) -->
+    <form id="form-register" class="auth-form hidden">
+      <label for="reg-nombre">Nombre</label>
+      <input type="text" id="reg-nombre" required autocomplete="given-name" placeholder="Juan" />
+
+      <label for="reg-apellido">Apellido</label>
+      <input type="text" id="reg-apellido" required autocomplete="family-name" placeholder="Pérez" />
+
+      <label for="reg-correo">Correo electrónico</label>
+      <input type="email" id="reg-correo" required autocomplete="email" placeholder="admin@donnacho.mx" />
+
+      <label for="reg-telefono">Teléfono (opcional)</label>
+      <input type="tel" id="reg-telefono" autocomplete="tel" placeholder="9511234567" />
+
+      <label for="reg-password">Contraseña</label>
+      <input type="password" id="reg-password" required minlength="6" autocomplete="new-password" placeholder="Mínimo 6 caracteres" />
+
+      <button type="submit" id="btn-register" class="btn-primary">Registrar cuenta</button>
+    </form>
+  </main>
+
+  <script src="auth.js?v=1"></script>
+</body>
+</html>
